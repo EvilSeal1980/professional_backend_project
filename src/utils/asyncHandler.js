@@ -27,7 +27,7 @@ If requestHandler (or any asynchronous code within it) throws an error or reject
 The .catch() block calls next(err), which passes the error to the next error-handling middleware in your Express app.
 */
 const asyncHandler = (requestHandler) => {
-    (req, res, next) => {
+    return (req, res, next) => {
         Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err));
     }
 }

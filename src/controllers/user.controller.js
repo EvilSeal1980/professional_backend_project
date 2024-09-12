@@ -16,21 +16,21 @@ const registerUser = asyncHandler(async (req, res) => {
   // return response
 
   const { fullName, email, userName, password } = req.body;
-  console.log("email: ", email);
+  // console.log("email: ", email);
 
   // if (fullName === "") {
   //     throw new ApiError(400, "fullname is required")
   // }
 
   if (
-    [fullName, email, userName, password].some((field) => fileld?.trim() === "")
+    [fullName, email, userName, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(200, "All fields are required");
   }
 
   // if you want to take multiple objects to check
   // user, you can use "$or"
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ userName }, { email }],
   });
 
@@ -47,8 +47,12 @@ const registerUser = asyncHandler(async (req, res) => {
   // which give .path - gives proper path to the file
   // jo multer ne upload kia ha
   const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  // const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
+  let coverImageLocalPath;
+  if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0)  {
+    coverImageLocalPath = req.files?.coverImage[0]?.path;
+  }
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required");
   }
@@ -71,9 +75,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // _id automatically given by mongoDB
   // .select - kya nhi chahiye -> "-field1 -field2"
-  const createdUser = User.findById(user._id).select("-password -refreshToken");
+  const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-  if (createdUser) {
+  if (!createdUser) {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
@@ -82,6 +86,9 @@ const registerUser = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registerd succesfully"));
+
+    // we use form-data instead of raw json to send data in postman
+    // as we can't handle files in raw json
 });
 
 export { registerUser };

@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
 import dotenv from "dotenv";
 
+dotenv.config({
+  path: './.env'
+})
+
 import { ConnectionString } from "mongodb-connection-string-url";
 
 const connectDB = async () => {

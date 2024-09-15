@@ -1,11 +1,10 @@
-import mongoose, { Schema } from "mongoose";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
-    userName: {
+    username: {
       type: String,
       required: true,
       unique: true,
@@ -70,7 +69,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-  await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password);
 };
 
 // JWT Tokens
@@ -79,7 +78,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      userName: this.userName,
+      username: this.username,
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET,
@@ -92,10 +91,7 @@ userSchema.methods.generateAccessToken = function () {
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
-      _id: this._id,
-      email: this.email,
-      userName: this.userName,
-      fullName: this.fullName,
+      _id: this._id, 
     },
     process.env.REFRESH_TOKEN_SECRET,
     {

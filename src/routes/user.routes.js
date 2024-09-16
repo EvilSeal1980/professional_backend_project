@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, refreshAccessToken } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -30,5 +30,8 @@ router.route('/logout').post(verifyJWT, logoutUser);
 // verifyJWT - middleware -that runs before logoutUser
 // next() - we write next in middlewware so that it 
 // runs the next method after the middleware
+
+router.route("/refresh-token").post(refreshAccessToken);
+
 
 export default router
